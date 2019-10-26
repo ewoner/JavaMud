@@ -1,0 +1,4 @@
+1. Ettempt to log on.
+2. Sleep until PK Kill flag is lifted
+3. Check name if exists
+3.1

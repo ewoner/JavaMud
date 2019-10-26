@@ -109,7 +109,7 @@ public class LogicDatabase {
             modpath = "Logics";
         }
         modpath = modpath.toLowerCase();
-        boolean workded = ScriptManager.javac(module, modpath);
+        boolean workded = ScriptManager.compile(module, modpath);
         if (workded == false) {
             return false;
         }

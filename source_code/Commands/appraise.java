@@ -5,7 +5,7 @@ import Entities.Item;
 import Entities.MudCharacter;
 import Mud.D_and_D_Mud.MudData;
 import Mud.Mud;
-//import utilities.Dice;
+import utilities.Dice;
 
 /**
  *
@@ -25,7 +25,7 @@ public class appraise extends Command {
 
     @Override
     public void Execute(String parameters) {
-        /*if (parameters.isEmpty()) {
+        if (parameters.isEmpty()) {
             badUsage();
             return;
         }
@@ -98,5 +98,5 @@ public class appraise extends Command {
             }
         }
         Dice.setTroubleOutput(false);
-    */}
+    }
 }

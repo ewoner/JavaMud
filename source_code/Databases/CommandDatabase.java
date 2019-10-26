@@ -26,9 +26,9 @@ import java.util.logging.Logger;
  */
 public class CommandDatabase {
 
-    private Map<String, Boolean> commands = new HashMap<String, Boolean>();
-    private static final String scriptfolder = "Data/Scripts/";
-    private static final String classfolder = "Commands";
+    private final Map<String, Boolean> commands = new HashMap<String, Boolean>();
+    private static final String SCRIPT_FOLDER = "Data/Scripts/";
+    private static final String CLASS_FOLDER = "Commands";
 
     /** 
      * Basic Constructor.  Does nothing but calls super()
@@ -54,7 +54,7 @@ public class CommandDatabase {
         }
         if (loadable && command != null) {
             try {
-                File file = new File(scriptfolder);
+                File file = new File(SCRIPT_FOLDER);
                 ClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
                 Class cc = loader.loadClass("Commands." + command);
                 @SuppressWarnings(value = "unchecked")
@@ -104,7 +104,7 @@ public class CommandDatabase {
         }
         if (loadable && command != null) {
             try {
-                File file = new File(scriptfolder);
+                File file = new File(SCRIPT_FOLDER);
                 ClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
                 Class cc = loader.loadClass("Commands." + command);
                 @SuppressWarnings(value = "unchecked")
@@ -149,7 +149,7 @@ public class CommandDatabase {
      * to include the "scriptable" files.
      */
     public void loadDB() {
-        File fileDir = new File("Data/Scripts/" + classfolder);
+        File fileDir = new File("Data/Scripts/" + CLASS_FOLDER);
         if (fileDir.isDirectory()) {
             File[] scriptFiles = fileDir.listFiles();
             for (File f : scriptFiles) {
@@ -157,7 +157,7 @@ public class CommandDatabase {
                 if (name.contains(".class")) {
                     continue;
                 }
-                boolean workded = ScriptManager.javac(name, "Commands");
+                boolean workded = ScriptManager.compile(name, "Commands");
                 Command c = loadCommand(name);
                 addCommand(c);
                 if (!workded) {
@@ -245,12 +245,12 @@ public class CommandDatabase {
         if (c != null && !c.isLoadable()) {
             return false;
         }
-        boolean worked = ScriptManager.javac(name, classfolder);
+        boolean worked = ScriptManager.compile(name, CLASS_FOLDER);
         if (worked == false) {
             return false;
         }
         try {
-            c = loadCommand(name, classfolder);
+            c = loadCommand(name, CLASS_FOLDER);
         } catch (Exception ex) {
             Logger.getLogger(CommandDatabase.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -280,10 +280,10 @@ public class CommandDatabase {
         name = name.toLowerCase();
         Command command = null;
         try {
-            File classesDir = new File(scriptfolder);
+            File classesDir = new File(SCRIPT_FOLDER);
             ClassLoader parentLoader = Command.class.getClassLoader();
             URLClassLoader loader1 = new URLClassLoader(new URL[] {classesDir.toURI().toURL()}, parentLoader);
-            Class cls1 = loader1.loadClass(classfolder + "." + name);
+            Class cls1 = loader1.loadClass(CLASS_FOLDER + "." + name);
             System.out.println("<------Now loading: " + cls1.getName());
             @SuppressWarnings(value = "unchecked")
             Constructor cons = cls1.getConstructor(new Class[] {MudCharacter.class});
@@ -312,17 +312,18 @@ public class CommandDatabase {
     private Command loadCommand(String name, String className) throws Exception {
         Script script = null;
         name = name.toLowerCase();
-        File file = new File(scriptfolder);
+        File file = new File(SCRIPT_FOLDER);
         ClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
         // load class through new loader
         Class aClass = loader.loadClass(className + "." + name);
-        if (className.equals("Commands")) {
+        /*if (className.equals("Commands")) {
             @SuppressWarnings("unchecked")
             Constructor cons = aClass.getConstructor(new Class[] {MudCharacter.class});
             script = (Script) cons.newInstance(new Object[] {null});
         } else {
             script = (Script) aClass.newInstance();
-        }
+        }*/
+        script = (Script) aClass.newInstance();
         return (Command)script;
     }
 }

@@ -4,7 +4,7 @@ import Actions.ActionType;
 import Entities.MudCharacter;
 import Mud.D_and_D_Mud.MudData;
 import Server.Main;
-//import utilities.Dice;
+import utilities.Dice;
 
 /**
  *
@@ -27,7 +27,7 @@ public class hide extends Command {
     @Override
     public void Execute(String args) {
         if (Mob().getAttribute(MudData.HIDING) != 1) {
-            //hideCheck = Dice.Roll_d20() + Mob().getAttribute(MudData.HIDESKILL);
+            hideCheck = Dice.Roll_d20() + Mob().getAttribute(MudData.HIDESKILL);
             Mob().setAttribute(MudData.HIDING, 1);
             Main.game.doAction(ActionType.announce, 0, 0, 0, 0, Mob().getName() + " attempts to fade into the shadows....");
         }else {
