@@ -1,0 +1,15 @@
+data/
+└── regions/
+    ├── NorthernWastes/
+    │   ├── region.data
+    │   ├── rooms.data
+    │   ├── portals.data
+    │   ├── items.data
+    │   └── characters.data
+    ├── SouthernDesert/
+    │   ├── region.data
+    │   ├── rooms.data
+    │   ├── portals.data
+    │   ├── items.data
+    │   └── characters.data
+    └── manifest

@@ -29,24 +29,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The meat of the game.  This is the main game module.  All Entities exist
- * inside of this module.  In a nut shell, this is the game.
+ * The meat of the game. This is the main game module. All Entities exist inside
+ * of this module. In a nut shell, this is the game.
  *
- * @author Brion Lang
- *  Date: 17 Jam 2009
+ * @author Brion Lang Date: 17 Jam 2009
  *
- * Version 1.1.0
- * 1.  Removed the loading of players.  Players will be kept in Account files only now.
- * Version 1.0.0
- *  1.  joinQuantities() was not removing the item from the mud prior to adding the id to the cleanup list.  In affect leaving the item in the game, but deleted in the database.
- *  Version 1.0.0
+ * Version 1.1.0 1. Removed the loading of players. Players will be kept in
+ * Account files only now. Version 1.0.0 1. joinQuantities() was not removing
+ * the item from the mud prior to adding the id to the cleanup list. In affect
+ * leaving the item in the game, but deleted in the database. Version 1.0.0
  *
  */
 public class Mud {
 
     /**
-     * The main databased for the Mud game.  Static and public to be shared
-     * with all.  Note-being static do not call two Mud classes in the same
+     * The main databased for the Mud game. Static and public to be shared with
+     * all. Note-being static do not call two Mud classes in the same
      * application unless you wish them to share the same databases.
      */
     static final public DatabaseGroup dbg = new DatabaseGroup();
@@ -77,9 +75,8 @@ public class Mud {
     }
 
     /**
-     * Processed a Game action.  Creates a new Action and calls
-     * DoAction(Acton).
-     * 
+     * Processed a Game action. Creates a new Action and calls DoAction(Acton).
+     *
      * @param action Action Type
      * @param arg1 Argument 1
      * @param arg2 Argument 2
@@ -92,8 +89,8 @@ public class Mud {
     }
 
     /**
-     * Processes a game action. 
-     * 
+     * Processes a game action.
+     *
      * @param action Action To Process
      */
     public void doAction(Action action) {
@@ -172,7 +169,7 @@ public class Mud {
     }
 
     /**
-     * The main method of the game.  Runs thru the queue and any actions that
+     * The main method of the game. Runs thru the queue and any actions that
      * need to be fired are fired.
      */
     public void executeLoop() {
@@ -214,8 +211,8 @@ public class Mud {
     }
 
     /**
-     * Cycles through all characters in a room and processes an action
-     * on each one of them.
+     * Cycles through all characters in a room and processes an action on each
+     * one of them.
      */
     private void actionForRoomCharacters(Action action, Room room) {
         for (int i : room.getCharacters()) {
@@ -238,8 +235,8 @@ public class Mud {
     }
 
     /**
-     * Routes an Action to the correct Entity.  See documentation about
-     * actions for more information.
+     * Routes an Action to the correct Entity. See documentation about actions
+     * for more information.
      */
     private void routeAction(Action action) {
         EntityType type = EntityType.values()[action.arg1];
@@ -266,11 +263,10 @@ public class Mud {
 
         }
 
-
     }
 
     /**
-     * Modifies an Atrrribute of an entity.  Routes it accordinly.
+     * Modifies an Atrrribute of an entity. Routes it accordinly.
      */
     private void modifyAttribute(Action action) {
         EntityType type = EntityType.values()[action.arg1];
@@ -306,7 +302,6 @@ public class Mud {
                 break;
 
         }
-
 
     }
 
@@ -633,7 +628,7 @@ public class Mud {
     }
 
     /**
-     * A forced transport.  Does not query if it is allowed.
+     * A forced transport. Does not query if it is allowed.
      */
     private void forceTransport(Action action) {
         // ========================================================================
@@ -752,8 +747,8 @@ public class Mud {
             // normal transfer, delete from old room
             room.removeItem(item.getID());
             region.removeItem(item.getID());
-            newitem =
-                    item;
+            newitem
+                    = item;
         }
 
         int newitemid = newitem.getID();
@@ -808,7 +803,6 @@ public class Mud {
 
         }
 
-
         if (item.isQuantity() && quantity > item.getQuantity()) {
             mob.DoAction(new Action(ActionType.error, 0, 0, 0, 0,
                     "You can't drop " + quantity
@@ -843,8 +837,8 @@ public class Mud {
         } else {
             // normal transfer, delete from old player
             mob.removeItem(item.getID());
-            newitem =
-                    item;
+            newitem
+                    = item;
         }
 // now move the item to the room
 
@@ -899,7 +893,6 @@ public class Mud {
 
         }
 
-
         if (item.isQuantity() && quantity > item.getQuantity()) {
             giver.DoAction(new Action(ActionType.error, 0, 0, 0, 0,
                     "You can't give away " + quantity
@@ -929,8 +922,8 @@ public class Mud {
         } else {
             // normal transfer, delete from old player
             giver.removeItem(item.getID());
-            newitem =
-                    item;
+            newitem
+                    = item;
         }
 // now move the item to the other player
 
@@ -952,7 +945,7 @@ public class Mud {
     }
 
     /**
-     * Joins the quanties of two items into one new item.  Deletes any but the
+     * Joins the quanties of two items into one new item. Deletes any but the
      * item instance passed.
      */
     private void joinQuantities(HasItems entity, Item keeper) {
@@ -1123,7 +1116,6 @@ public class Mud {
 
         }
 
-
         if (logic == null) {
             throw new MudException(new Exception("Game::LogicAction: Cannot load logic " + logicname), this.getClass().getName());
         }
@@ -1159,7 +1151,6 @@ public class Mud {
 
         }
 
-
     }
 
     /**
@@ -1190,11 +1181,10 @@ public class Mud {
 
         }
 
-
     }
 
     /**
-     *  Adds a character to the realm's list.
+     * Adds a character to the realm's list.
      */
     private void addCharacter(MudCharacter character) {
         characters.add(character);
@@ -1208,7 +1198,7 @@ public class Mud {
     }
 
     /**
-     *  Removes a character from the realm's list.
+     * Removes a character from the realm's list.
      */
     private void removeCharacter(MudCharacter character) {
         characters.remove(character);
@@ -1222,8 +1212,8 @@ public class Mud {
     }
 
     /**
-     *  Deletes an item.  First removes it and it hooks, then
-     * "erases" the database.
+     * Deletes an item. First removes it and it hooks, then "erases" the
+     * database.
      */
     private void deleteItem(Item item) {
         if (item.Region() != null) {
@@ -1285,7 +1275,7 @@ public class Mud {
     }
 
     /**
-     *  saves all the game timers in the queue.
+     * saves all the game timers in the queue.
      */
     private void saveTimers() throws MudException {
         PrintWriter timerfile = null;
@@ -1301,7 +1291,6 @@ public class Mud {
                 a.save(timerfile);
             }
 
-
         } catch (IOException ex) {
             throw new MudException(ex, this.getClass().getName());
         } finally {
@@ -1311,7 +1300,7 @@ public class Mud {
     }
 
     /**
-     *  Loads all the game times from a file.
+     * Loads all the game times from a file.
      */
     private void loadTimers() throws MudException {
         BufferedReader timerfile = null;
@@ -1322,14 +1311,11 @@ public class Mud {
             gametime.reset(t);
             timerfile.readLine();//[NUM ACTIONS]
             int size = Integer.parseInt(timerfile.readLine());
-            for (int i = 0; i
-                    < size; i++) {
+            for (int i = 0; i < size; i++) {
                 TimedAction a = new TimedAction();
                 a.load(timerfile);
                 addTimedAction(a);
             }
-
-
         } catch (IOException ex) {
             throw new MudException(ex, this.getClass().getName());
         } finally {
@@ -1380,7 +1366,7 @@ public class Mud {
     }
 
     /**
-     *  Finds a player from the databse using a partial match.
+     * Finds a player from the databse using a partial match.
      *
      * @param name Name to match.
      * @return Returns the player or NULL.
@@ -1392,6 +1378,7 @@ public class Mud {
 
     /**
      * Finds a player from teh database using a full match.
+     *
      * @param name Name to match.
      * @return Player or NULL
      */
@@ -1401,7 +1388,7 @@ public class Mud {
     }
 
     /**
-     *  Checks to see if the List of players contains this player.
+     * Checks to see if the List of players contains this player.
      *
      * @param player Player to compare.
      * @return TRUE if on list.
@@ -1427,7 +1414,7 @@ public class Mud {
     }
 
     /**
-     * Adds an action to the queue.  Action is timed relative from when it was
+     * Adds an action to the queue. Action is timed relative from when it was
      * being added.
      *
      * @param time Offset from the action being added to the queue.
@@ -1438,7 +1425,7 @@ public class Mud {
     }
 
     /**
-     * Adds an action to the queue.  Action is timed relative from when it was
+     * Adds an action to the queue. Action is timed relative from when it was
      * being added.
      *
      * @param time Offset from when Added to queue.
@@ -1479,7 +1466,7 @@ public class Mud {
     }
 
     /**
-     * Addes a timed action to the queue.  Called by other "addActions" methos.
+     * Addes a timed action to the queue. Called by other "addActions" methos.
      *
      * @param action To add.
      */
@@ -1514,14 +1501,15 @@ public class Mud {
     }
 
     /**
-     * Loads all data from file.  Normally called at start of game only.  Else
-     * it is really reloading is it not?
+     * Loads all data from file. Normally called at start of game only. Else it
+     * is really reloading is it not?
+     *
      * @throws MudException
      */
     public void loadall() throws MudException {
         System.out.println("Loading.......");
-        Running =
-                true;
+        Running
+                = true;
         // load the templates and accounts first; they depend on nothing else
         System.out.println("<--Loading mob templates.......");
         dbg.characterDB.loadTemplates();
@@ -1547,6 +1535,7 @@ public class Mud {
 
     /**
      * saves all data to disk.
+     *
      * @throws MudException
      */
     public void saveall() throws MudException {
@@ -1562,25 +1551,23 @@ public class Mud {
      */
     public void shutdown() {
         System.out.println("Mud Shutting down...........");
-        Running =
-                false;
+        Running
+                = false;
     }
 
     /**
-     * Updates the ticker.  As of yet does nothing.
+     * Updates the ticker. As of yet does nothing.
      */
     public void tickUpdate() {
         System.out.println("Running a tick update: " + (++tickCount));
     }
 
     /**
-     * Takes a string in and spits it based on quotation marks(") or spaces.
-     * If quotation marks are deteted, it spilts the string into substring
-     * based solely on the marks.  Else it splits using Strings own split()
-     * method.
+     * Takes a string in and spits it based on quotation marks(") or spaces. If
+     * quotation marks are deteted, it spilts the string into substring based
+     * solely on the marks. Else it splits using Strings own split() method.
      *
-     * Example using quotaion marks
-     * command "I love this mud" It's great.
+     * Example using quotaion marks command "I love this mud" It's great.
      *
      * That becomes two strings = "I Love this mud" and "It's great".
      *
@@ -1614,8 +1601,8 @@ public class Mud {
                 mat.usePattern(space).find();
                 if (mat.usePattern(qmarks).find()) {
                     token = mat.group();
-                    inMarks =
-                            !inMarks;
+                    inMarks
+                            = !inMarks;
                 } else if (mat.usePattern(number).find()) {
                     token = mat.group();
                 } else if (mat.usePattern(word).find()) {
@@ -1624,8 +1611,8 @@ public class Mud {
                     token = mat.group();
                 } else if (mat.usePattern(end).find()) {
                     token = mat.group();
-                    ending =
-                            true;
+                    ending
+                            = true;
                     if (inMarks) {
                         inMarks = false;
                     }
@@ -1662,13 +1649,11 @@ public class Mud {
     }
 
     /**
-     * Takes a string in and spits it based on quotation marks(") or spaces.
-     * If quotation marks are deteted, it spilts the string into substring
-     * based solely on the marks.  Else it splits using Strings own split()
-     * method.
+     * Takes a string in and spits it based on quotation marks(") or spaces. If
+     * quotation marks are deteted, it spilts the string into substring based
+     * solely on the marks. Else it splits using Strings own split() method.
      *
-     * Example using quotaion marks
-     * command "I love this mud" It's great.
+     * Example using quotaion marks command "I love this mud" It's great.
      *
      * That becomes two strings = "I Love this mud" and "It's great".
      *
@@ -1715,8 +1700,8 @@ public class Mud {
             }
 
             answer = new String[answer.length - count];
-            count =
-                    0;
+            count
+                    = 0;
             for (int i = 0; i
                     < values.length; i++) {
                 if (!values[i].isEmpty()) {

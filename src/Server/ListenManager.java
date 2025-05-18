@@ -1,33 +1,24 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Server;
 
 import Server.ServerExceptions.ServerException;
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
-/**
- *
- * @author Administrator
- */
 class ListenManager extends Thread {
 
-    private List<ServerSocketChannel> sockets = new ArrayList<ServerSocketChannel>();
+    private Selector selector;
+    private Map<Integer, ServerSocketChannel> sockets = new HashMap<>();
     private NewConnectionManager manager;
-    private final int MAX = 10;
-    private Selector acceptSelector;
     private boolean running = false;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
@@ -36,45 +27,24 @@ class ListenManager extends Thread {
         try {
             log.info("ListenManager initialization.....");
             manager = null;
-            acceptSelector = Selector.open();
+            selector = Selector.open();
         } catch (IOException ex) {
             throw new ServerException(ex, this.getClass().getName());
         }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        for (ServerSocketChannel ssc : sockets) {
-            ssc.close();
+    public void addPort(int port) throws Exception {
+        try {
+            ServerSocketChannel ssc = ServerSocketChannel.open();
+            ssc.configureBlocking(false);
+            InetAddress address = InetAddress.getLocalHost();
+            ssc.socket().bind(new InetSocketAddress(address, port));
+            log.info("Bound to " + address);
+            ssc.register(selector, SelectionKey.OP_ACCEPT);
+            sockets.put(port, ssc);
+        } catch (IOException ex) {
+            throw new Exception("Failed to add port", ex);
         }
-    }
-
-    void addPort(int port) throws Exception {
-//        ServerSocketChannel ssc = ServerSocketChannel.open();
-//        ssc.configureBlocking(false);
-//        InetAddress address = InetAddress.getLocalHost();
-//        ssc.socket().bind(new InetSocketAddress(address, port));
-//        Logger.getLogger(ListenManager.class.getName()).info("Bound to " + address);
-//        ssc.register(this.acceptSelector, SelectionKey.OP_ACCEPT);
-
-        if (sockets.size() == MAX) {
-            throw new Exception("Socket Limit Reached");
-        }
-
-        // create a new socket
-        ServerSocketChannel lsock = ServerSocketChannel.open();
-
-        // make the socket non-blocking, so that it won't block if a
-        // connection exploit is used when accepting (see Chapter 4)
-        lsock.configureBlocking(false);
-
-        // listen on the requested port
-        InetAddress address = InetAddress.getLocalHost();
-        lsock.socket().bind(new InetSocketAddress(address, port));
-        log.info("Bound to " + address);
-        lsock.register(this.acceptSelector, SelectionKey.OP_ACCEPT);
-        sockets.add(lsock);
     }
 
     @Override
@@ -83,13 +53,13 @@ class ListenManager extends Thread {
         System.out.println("<----- ListenManager.run() ----->");
         while (isRunning()) {
             try {
-                acceptSelector.select();
-                Set readyKeys = acceptSelector.selectedKeys();
-                for (Iterator i = readyKeys.iterator(); i.hasNext();) {
-                    SelectionKey key = (SelectionKey) i.next();
+                selector.select();
+                Set<SelectionKey> readyKeys = selector.selectedKeys();
+                for (Iterator<SelectionKey> i = readyKeys.iterator(); i.hasNext();) {
+                    SelectionKey key = i.next();
                     i.remove();
-                    ServerSocketChannel readyChannel = (ServerSocketChannel) key.channel();
-                    SocketChannel incomingChannel = readyChannel.accept();
+                    ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
+                    SocketChannel incomingChannel = ssc.accept();
                     log.info("AcceptThread: Connection from " + incomingChannel.socket().getInetAddress());
                     manager.newConnection(incomingChannel);
                 }
@@ -99,12 +69,9 @@ class ListenManager extends Thread {
         }
         log.info("ListenManager.run(): Has Stopped");
         System.out.println("<----- ListenManager HAS STOPPED ----->");
-
-
     }
 
-    void setConnectionManager(NewConnectionManager manager) {
-        // set the new action function
+    public void setConnectionManager(NewConnectionManager manager) {
         this.manager = manager;
     }
 
@@ -113,6 +80,13 @@ class ListenManager extends Thread {
     }
 
     public boolean isRunning() {
-        return running;
+        return this.running;
+    }
+
+    public void close() throws IOException {
+        for (ServerSocketChannel ssc : sockets.values()) {
+            ssc.close();
+        }
+        selector.close();
     }
 }

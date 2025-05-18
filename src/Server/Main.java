@@ -3,6 +3,7 @@ package Server;
 import Mud.Exceptions.MudException;
 import Mud.Mud;
 import Server.ServerExceptions.ServerException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +55,7 @@ public class Main extends Thread {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Main main = new Main();
         main.telnetlistener.setRunning(true);
@@ -77,6 +78,7 @@ public class Main extends Thread {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         main.telnetlistener.setRunning(false);
+        main.telnetlistener.close();
         //Main.game.saveall();
         Mud.dbg.purge();
         System.exit(0);

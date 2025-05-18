@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -18,7 +21,7 @@ import javax.tools.ToolProvider;
 
 public class sm3 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchMethodException {
         StringBuilder sb = new StringBuilder(64);
         sb.append("package Scripts;");
         sb.append("public class HelloWorld {\n");
@@ -73,7 +76,12 @@ public class sm3 {
                     // Load the class from the classloader by name....
                     Class<?> loadedClass = classLoader.loadClass("testcompile.HelloWorld");
                     // Create a new instance...
-                    Object obj = loadedClass.newInstance();
+                    Object obj = null;
+                    try {
+                        obj = loadedClass.getDeclaredConstructor().newInstance();
+                    } catch (IllegalArgumentException | InvocationTargetException ex) {
+                        Logger.getLogger(sm3.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     // Santity check
                     if (obj instanceof DoStuff) {
                         // Cast to the DoStuff interface

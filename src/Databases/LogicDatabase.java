@@ -69,7 +69,7 @@ public class LogicDatabase {
                 Class cls1 = loader.loadClass("Logics." + name);
 //                Constructor con = cls1.getConstructor(new Class[] {String.class, int.class});
 //                logic = (Logic) con.newInstance(name, id);
-                logic = (Logic) cls1.newInstance();
+                logic = (Logic) cls1.getDeclaredConstructor().newInstance();
                 logic.setEntityID(id);
                 if (entity instanceof MudCharacter) {
                     logic.setEntityType(EntityType.Character);
@@ -258,7 +258,7 @@ public class LogicDatabase {
             URLClassLoader loader1 = new URLClassLoader(new URL[] {classesDir.toURI().toURL()}, parentLoader);
             Class cls1 = loader1.loadClass(classfolder + "." + name);
             System.out.println("<------Now loading: " + cls1.getName());
-            logic = (Logic) cls1.newInstance();
+            logic = (Logic) cls1.getDeclaredConstructor().newInstance();
             return logic;
         } catch (Exception ex) {
             Logger.getLogger(CommandDatabase.class.getName()).log(Level.SEVERE, null, ex);

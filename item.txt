@@ -1,0 +1,23 @@
+[NAME]
+Sword
+[DESCRIPTION]
+A sharp sword.
+[ROOM]
+1
+[REGION]
+0
+[ISQUANTITY]
+false
+[QUANTITY]
+1
+[TEMPLATEID]
+2
+[DATABANK]
+damage 10
+[/DATABANK]
+[LOGICS]
+Sharp
+[DATABANK]
+sharpness high
+[/DATABANK]
+[/LOGICS]

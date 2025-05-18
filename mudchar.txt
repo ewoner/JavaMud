@@ -1,0 +1,75 @@
+[NAME]
+John Doe
+[DESCRIPTION]
+A brave adventurer.
+[ROOM]
+1
+[REGION]
+10
+[TEMPLATEID]
+5
+[ACCOUNT]
+123
+[QUIETMODE]
+false
+[VERBOSEMODE]
+true
+[DATABANK]
+[/DATABANK]
+[COMMANDS]
+Attack
+[DATABANK]
+damage 5
+target_enemy
+[/DATABANK]
+Move
+[DATABANK]
+direction north
+[/DATABANK]
+[/COMMANDS]
+[LOGICS]
+Explore
+[DATABANK]
+region_id 10
+[/DATABANK]
+[/LOGICS]
+[ITEMS]
+[ITEM]
+[NAME]
+Sword
+[DESCRIPTION]
+A sharp sword.
+[ROOM]
+1
+[REGION]
+0
+[ISQUANTITY]
+false
+[QUANTITY]
+1
+[TEMPLATEID]
+2
+[DATABANK]
+damage 10
+[/DATABANK]
+[/ITEM]
+[ITEM]
+[NAME]
+Health Potion
+[DESCRIPTION]
+Restores health.
+[ROOM]
+1
+[REGION]
+0
+[ISQUANTITY]
+false
+[QUANTITY]
+1
+[TEMPLATEID]
+3
+[DATABANK]
+healing 20
+[/DATABANK]
+[/ITEM]
+[/ITEMS]

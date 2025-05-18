@@ -34,7 +34,7 @@ public class NewConnection<P extends NewProtocol> {
     private long creationtime;
     private boolean closed;
     private Selector readSelector;
-    private ByteBuffer readBuffer,  writeBuffer;
+    private ByteBuffer readBuffer, writeBuffer;
     private final int BUFFERSIZE = 8000;
     private CharsetDecoder asciiDecoder;
     private Charset ascii;
@@ -107,11 +107,11 @@ public class NewConnection<P extends NewProtocol> {
 
     public void switchHandler(NewHandler handler) {
         if (getHandler() != null) {
-            getHandler().leave();     // leave the current state if it exists
-            handlerstack.pop();   // pop the pointer off
+            getHandler().leave(); // leave the current state if it exists
+            handlerstack.pop(); // pop the pointer off
         }
         handlerstack.push(handler);
-        handler.enter();     // enter the new state
+        handler.enter(); // enter the new state
     }
 
     public void addHandler(NewHandler handler) {
@@ -119,12 +119,12 @@ public class NewConnection<P extends NewProtocol> {
             getHandler().leave(); // leave the current state if it exists
         }
         handlerstack.push(handler);
-        handler.enter();     // enter the new state
+        handler.enter(); // enter the new state
     }
 
     public void removeHandler() {
-        getHandler().leave();     // leave current state
-        handlerstack.pop();   // pop the pointer off
+        getHandler().leave(); // leave current state
+        handlerstack.pop(); // pop the pointer off
         if (getHandler() != null) // if old state exists,
         {
             getHandler().enter(); // tell it connection has re-entered
@@ -177,9 +177,9 @@ public class NewConnection<P extends NewProtocol> {
                     m_lastSendTime = MyTimer.GetTimeS();
 
                 }
-            }   // end no-data-sent check
+            } // end no-data-sent check
 
-        }   // end buffersize check}
+        } // end buffersize check}
     }
 
     public int send(String data) throws ServerException {
@@ -205,7 +205,8 @@ public class NewConnection<P extends NewProtocol> {
 
     public void receive() throws ServerException {
         try {
-            //Logger.getLogger(NewConnection.class.getName()).info("New Connection: receive");
+            // Logger.getLogger(NewConnection.class.getName()).info("New Connection:
+            // receive");
             int keysReady = keysReady = getReadSelector().select();
 
             if (keysReady > 0) {
@@ -215,7 +216,7 @@ public class NewConnection<P extends NewProtocol> {
                     SelectionKey key = (SelectionKey) i.next();
                     i.remove();
                     String result = readRequest(key);
-//                    System.out.println("<----- NewConnection.recieve()\n" + result + "----->");
+                    // System.out.println("<----- NewConnection.recieve()\n" + result + "----->");
                     protocol.Translate(this, result.toCharArray(), result.length());
                 }
             }
@@ -236,32 +237,47 @@ public class NewConnection<P extends NewProtocol> {
     }
 
     private String readRequest(SelectionKey key) throws ServerException {
-//        System.out.println("<------ NC:  readRequest ------>");
+        // System.out.println("<------ NC: readRequest ------>");
         String result = "";
         SocketChannel incomingChannel = (SocketChannel) key.channel();
         try {
-            int bytesRead = incomingChannel.read(readBuffer);
+            int bytesRead = 0;
+            if ( incomingChannel.isConnected() ){
+                bytesRead = incomingChannel.read(readBuffer);
+            }
             if (bytesRead == -1) {
-                Logger.getLogger(NewConnection.class.getName()).warning("disconnect:" + incomingChannel.socket().getInetAddress() +
-                        ", end-of-stream");
+                Logger.getLogger(NewConnection.class.getName())
+                        .warning("disconnect:" + incomingChannel.socket().getInetAddress()
+                                + ", end-of-stream");
                 closed = true;
             }
             readBuffer.flip();
             result = asciiDecoder.decode(readBuffer).toString();
             readBuffer.clear();
-        //System.out.println(result);
+            // System.out.println(result);
 
         } catch (IOException ie) {
+            key.cancel();
             if (ie.getMessage() != null && ie.getMessage().contains("forcibly closed")) {
-                Logger.getLogger(NewConnection.class.getName()).warning("disconnect:" + incomingChannel.socket().getInetAddress() +
-                        ", forcibly cloaded.");
+                Logger.getLogger(NewConnection.class.getName())
+                        .warning("disconnect:" + incomingChannel.socket().getInetAddress()
+                                + ", forcibly cloaded.");
                 closed = true;
+                try {
+                    key.cancel();
+                    incomingChannel.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(NewConnection.class.getName()).log(Level.SEVERE,
+                            "Error closing socket after disconnect", ex);
+                }
             } else {
-                Logger.getLogger(NewConnection.class.getName()).log(Level.SEVERE, "ERROR in readRequest()--" + ie.toString(), ie);
+                Logger.getLogger(NewConnection.class.getName()).log(Level.SEVERE,
+                        "ERROR in readRequest()--" + ie.toString(), ie);
                 throw new ServerException(ie, this.getClass().getName(), "ERROR in readRequest() --");
             }
         } catch (Exception ioe) {
-            Logger.getLogger(NewConnection.class.getName()).log(Level.SEVERE, "ERROR in readRequest()--" + ioe.toString(), ioe);
+            Logger.getLogger(NewConnection.class.getName()).log(Level.SEVERE,
+                    "ERROR in readRequest()--" + ioe.toString(), ioe);
             throw new ServerException(ioe, this.getClass().getName(), "ERROR in readRequest() --");
         }
         return result;

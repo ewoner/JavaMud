@@ -1,0 +1,13 @@
+[NAME]
+Northern Wastes
+[DESCRIPTION]
+A desolate region known for its icy winds and barren landscapes.
+[DATABANK]
+temperature -10
+landscape frozen
+[/DATABANK]
+[LOGICS]
+Permafrost
+[DATABANK]
+ice_strength high
+[/DATABANK]

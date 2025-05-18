@@ -18,10 +18,9 @@ import java.util.logging.Logger;
 /**
  * The Region Database.
  *
- * @author Brion Lang
- *  Date: 17 Jam 2009
+ * @author Brion Lang Date: 17 Jam 2009
  *
- *  Version 1.0.0
+ * Version 1.0.0
  */
 public class RegionDatabase extends DefaultDatabase<Region> {
 
@@ -59,7 +58,7 @@ public class RegionDatabase extends DefaultDatabase<Region> {
 
     /**
      * Loads a single region from file
-     * 
+     *
      * @param name Name of the Region to load
      */
     public void loadRegion(String name) {
@@ -80,7 +79,8 @@ public class RegionDatabase extends DefaultDatabase<Region> {
             Mud.Mud.dbg.itemDB.loadFile(regionfolder + itemdatafile);
             reader.close();
         } catch (Exception ex) {
-            Logger.getLogger(RegionDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RegionDatabase.class.getName()).log(Level.SEVERE, "Error loading Refion: " + name, ex);
+            System.exit(100);
         } finally {
             try {
                 reader.close();
@@ -92,7 +92,7 @@ public class RegionDatabase extends DefaultDatabase<Region> {
 
     /**
      * Saves a region to file
-     * 
+     *
      * @param region
      */
     public void saveRegion(Region region) {
@@ -151,7 +151,7 @@ public class RegionDatabase extends DefaultDatabase<Region> {
 
     /**
      * Saves a region give only its ID.
-     * 
+     *
      * @param id Region ID
      */
     public void saveRegion(int id) {

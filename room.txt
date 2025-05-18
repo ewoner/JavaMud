@@ -1,0 +1,15 @@
+[REGION]
+5
+[NAME]
+Dungeon Entrance
+[DESCRIPTION]
+The entrance to a dark and ominous dungeon.
+[DATABANK]
+visibility 10
+[/DATABANK]
+[LOGICS]
+Locked
+[DATABANK]
+lock strength high
+[/DATABANK]
+[/LOGICS]
