@@ -4,7 +4,7 @@ import Server.Handler.DefaultHandler;
 import Server.Handler.TelnetLogon;
 import Server.Protocol.Telnet;
 import Server.ServerExceptions.ServerException;
-import java.nio.channels.SelectionKey;
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,19 +16,18 @@ import java.util.Set;
  *
  * @author Administrator
  */
-public class NewConnectionManager {
+public class NewConnectionManager implements ConnectionManager {
 
-    static public List<NewConnection> connections = new ArrayList<NewConnection>();
-    boolean isblocking;
-    final int maxDataRate = 1024;
+    static public List<NewConnection> connections = new ArrayList<>();
     final int sendTimeOut = 60;
     final int maxBuffed = 8192;
 
     public NewConnectionManager() {
     }
 
+    @Override
     public void newConnection(SocketChannel socket) throws ServerException  {
-        NewConnection<Telnet> con = new NewConnection<Telnet>(socket, new Telnet());
+        NewConnection<Telnet> con = new NewConnection<>(socket, new Telnet());
         if (availableConnections() != 0) {
             DefaultHandler.NoRoom(con);
             con.closeSocket();
@@ -39,16 +38,19 @@ public class NewConnectionManager {
         }
     }
 
+    @Override
     public int availableConnections() {
         return 0;
     }
 
+    @Override
     public int totalConnections() {
         return 0;
     }
 
+    @Override
     public void closeConnections() throws ServerException {
-        List<NewConnection> newList = new ArrayList<NewConnection>();
+        List<NewConnection> newList = new ArrayList<>();
         synchronized (newList) {
             while (newList.size() < connections.size()) {
                 newList.add(new NewConnection(new Telnet()));
@@ -62,8 +64,9 @@ public class NewConnectionManager {
         }
     }
 
+    @Override
     public void listen() throws ServerException {
-        List<NewConnection> newList = new ArrayList<NewConnection>();
+        List<NewConnection> newList = new ArrayList<>();
         synchronized (newList) {
             while (newList.size() < connections.size()) {
                 newList.add(new NewConnection(new Telnet()));
@@ -73,13 +76,12 @@ public class NewConnectionManager {
                 int keysReady = 0;
                 try {
                     keysReady = con.getReadSelector().selectNow();
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     throw new ServerException(ex, this.getClass().getName());
                 }
                 if (keysReady > 0) {
                     Set readyKeys = con.getReadSelector().selectedKeys();
                     for (Iterator i = readyKeys.iterator(); i.hasNext();) {
-                        SelectionKey key = (SelectionKey) i.next();
                         i.remove();
                         con.receive();
 
@@ -90,8 +92,9 @@ public class NewConnectionManager {
         }
     }
 
+    @Override
     public void send() throws ServerException {
-        List<NewConnection> newList = new ArrayList<NewConnection>();
+        List<NewConnection> newList = new ArrayList<>();
         synchronized (newList) {
             while (newList.size() < connections.size()) {
                 newList.add(new NewConnection(new Telnet()));
@@ -111,17 +114,20 @@ public class NewConnectionManager {
      * 
      * @throws Server.ServerExceptions.ServerException
      */
+    @Override
     public void manage() throws ServerException {
         listen();
         send();
         closeConnections();
     }
 
+    @Override
     public void close(NewConnection toClose) throws ServerException {
         toClose.closeSocket();
         connections.remove(toClose);
     }
 
+    @Override
     public void shutdown() throws ServerException {
         for (NewConnection con : connections) {
             con.closeSocket();

@@ -1,6 +1,5 @@
 package Server;
 
-import Mud.Exceptions.MudException;
 import Mud.Mud;
 import Server.ServerExceptions.ServerException;
 import java.io.IOException;
@@ -34,9 +33,8 @@ public class Main extends Thread {
      */
     public Main() {
         try {
-            telnetlistener = new ListenManager();
             telnetconnectionmanager = new NewConnectionManager();
-            telnetlistener.setConnectionManager(telnetconnectionmanager);
+            telnetlistener = new ListenManager(telnetconnectionmanager);
             telnetlistener.addPort(9909);
             game = new Mud();
             game.loadall();
